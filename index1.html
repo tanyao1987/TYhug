@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未来科技 - 创新驱动，连接世界</title>
+    <style>
+        /* CSS 样式 - 保持简洁现代风格 */
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #007bff; /* 品牌主色：蓝色 */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        header p {
+            margin-top: 5px;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* 访客计数样式 */
+        #visitorInfo {
+            margin-top: 10px;
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        #visitorCount {
+            color: #ffc107; /* 黄色，用于突出数字 */
+            font-weight: bold;
+            font-size: 1.2em; /* 稍微放大数字 */
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .feature-item {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-item h3 {
+            color: #28a745; /* 绿色 */
+            margin-top: 10px;
+        }
+
+        .icon {
+            font-size: 3em;
+            color: #ffc107; /* 黄色 */
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: white;
+            margin-top: 40px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+            .features {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚀 极光数字科技</h1>
+        <p>Innovation-Driven, World-Connected. 创新驱动，连接世界。</p>
+        
+        <p id="visitorInfo">
+            您是本站的第 <span id="visitorCount">加载中...</span> 位访客
+        </p>
+        
+    </header>
+
+    <div class="container">
+        
+        <div class="section">
+            <h2>✨ 我们的愿景</h2>
+            <p>我们致力于通过前沿的**人工智能**和**云计算**技术，构建一个更加智能、高效的数字生态系统。我们相信，每一次技术革新都将为人类带来无限可能。</p>
+            <p>未来已来，我们是构建者。</p>
+        </div>
+        
+        <div class="section">
+            <h2>💡 核心产品与优势</h2>
+            <div class="features">
+                <div class="feature-item">
+                    <div class="icon">🤖</div>
+                    <h3>AI 智能引擎</h3>
+                    <p>超强的学习能力和数据处理速度，为企业提供定制化的决策支持系统。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">☁️</div>
+                    <h3>分布式云服务</h3>
+                    <p>安全、稳定、高并发的全球云基础设施，助力您的业务随时随地弹性扩展。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🔗</div>
+                    <h3>物联网解决方案</h3>
+                    <p>连接万物，实现设备间无缝通信，打造真正的智慧城市与工业4.0。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📞 联系我们</h2>
+            <p>对我们的技术或合作感兴趣？请随时联系我们，共同开启数字化转型之旅。</p>
+            <ul>
+                <li><strong>邮箱:</strong> contact@auroradigital.com</li>
+                <li><strong>电话:</strong> (888) 123-4567</li>
+                <li><strong>地址:</strong> 创新大道88号 极光大厦</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 极光数字科技. 保留所有权利。</p>
+    </footer>
+
+    <script>
+        function fetchVisitorCount() {
+            // 使用您提供的 CountAPI V2 URL
+            const apiUrl = 'https://api.counterapi.dev/v2/s-team-7-1986/HuggingFace111/up';
+
+            fetch(apiUrl)
+                .then(response => {
+                    // 检查网络响应是否成功
+                    if (!response.ok) {
+                        throw new Error('网络响应错误，状态码: ' + response.status);
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    // *** 关键修复：从 data.data.up_count 中提取值 ***
+                    const currentCount = data && data.data ? data.data.up_count : undefined;
+                    
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    
+                    if (currentCount !== undefined && visitorCountElement) {
+                        // 更新页面上的数字，并格式化数字
+                        visitorCountElement.textContent = currentCount.toLocaleString();
+                    } else {
+                        if (visitorCountElement) visitorCountElement.textContent = '计数失败';
+                    }
+                })
+                .catch(error => {
+                    console.error('获取计数时发生错误:', error);
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    if (visitorCountElement) visitorCountElement.textContent = '加载错误';
+                });
+        }
+
+        // 页面加载完成后，执行获取计数器的函数
+        window.onload = fetchVisitorCount;
+    </script>
+</body>
+</html>
