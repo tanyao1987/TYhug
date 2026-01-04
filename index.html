@@ -3,66 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>极客全屏流 - 全平台通用版</title>
+    <title>极客全屏流 - 稳定增强版</title>
     <style>
         :root { --primary: #a29bfe; --bg: #000; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; color: #fff; font-family: sans-serif; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        /* 核心：锁定全局，禁止任何默认滚动 */
+        body, html { 
+            width: 100%; height: 100%; background: #000; 
+            overflow: hidden; position: fixed; 
+            color: #fff; font-family: sans-serif; 
+        }
 
-        /* 主容器 */
-        .viewport { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; cursor: grab; }
-        .viewport:active { cursor: grabbing; }
+        /* 独立于滑动层的背景视口 */
+        #app-root {
+            position: relative; width: 100%; height: 100%;
+            overflow: hidden; background: #000;
+        }
 
+        /* 滑动容器：只处理上下位移 */
         #main-slider {
-            width: 100%; height: 100%; position: absolute;
-            will-change: transform; transition: transform 0s;
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; will-change: transform; z-index: 1;
         }
 
         .slide-item {
-            width: 100%; height: 100%; position: absolute;
+            position: absolute; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             background: #000; overflow: hidden;
         }
 
-        /* 预设三层位置 */
-        .prev-slide { transform: translateY(-100%); }
-        .curr-slide { transform: translateY(0); }
-        .next-slide { transform: translateY(100%); }
+        /* 严格的三层布局 */
+        .prev-slide { transform: translateY(-100%); top: 0; }
+        .curr-slide { transform: translateY(0); top: 0; }
+        .next-slide { transform: translateY(100%); top: 0; }
 
         img, video { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
 
-        /* 底部导航 - 左右滑动 */
+        /* 独立层：底部导航，绝不参与位移 */
         .footer-nav {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 10px 0 30px 0; z-index: 100;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 40%, transparent);
+            padding: 10px 0 35px 0; z-index: 999; 
         }
-        .scroll-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 0 20px; gap: 12px; scrollbar-width: none; }
+        .scroll-container { 
+            display: flex; overflow-x: auto; white-space: nowrap; 
+            padding: 0 20px; gap: 12px; scrollbar-width: none;
+        }
         .scroll-container::-webkit-scrollbar { display: none; }
         .nav-tab {
-            display: inline-block; padding: 8px 18px; background: rgba(255,255,255,0.1); 
-            border-radius: 20px; font-size: 14px; color: #ccc; cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
+            display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.1); 
+            border-radius: 25px; font-size: 14px; color: #ccc; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
         }
-        .nav-tab.active { background: var(--primary); color: #000; font-weight: bold; }
+        .nav-tab.active { background: var(--primary); color: #000; font-weight: bold; border-color: var(--primary); }
 
-        /* 右侧悬浮栏 */
-        .side-bar { position: absolute; right: 20px; bottom: 130px; display: flex; flex-direction: column; gap: 15px; z-index: 101; }
-        .circle-btn { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; font-size: 22px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.2s; }
-        .circle-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+        .side-bar { position: fixed; right: 15px; bottom: 140px; display: flex; flex-direction: column; gap: 18px; z-index: 1000; }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; font-size: 24px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; }
 
-        #start-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0c0c10; z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #start-mask button { padding: 16px 45px; border-radius: 35px; border: none; background: var(--primary); font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        #start-mask button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+        #start-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #start-mask button { padding: 18px 50px; border-radius: 40px; border: none; background: var(--primary); font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 30px rgba(162,155,254,0.4); }
     </style>
 </head>
 <body>
 
 <div id="start-mask">
-    <button onclick="initApp()">开启全屏流</button>
-    <p style="color: #444; margin-top: 15px;">PC: 滚轮或拖动 / 手机: 上下滑动</p>
+    <button onclick="initApp()">开启刷视频模式</button>
+    <p style="color: #666; margin-top: 20px;">PC滚轮 / 手机滑动</p>
 </div>
 
-<div class="viewport" id="touch-zone">
+<div id="app-root">
     <div id="main-slider">
         <div class="slide-item prev-slide" id="slide-prev"></div>
         <div class="slide-item curr-slide" id="slide-curr"></div>
@@ -95,7 +105,7 @@
     let history = []; 
     let curIdx = -1;
     let isMuted = false;
-    let isAnimating = false; // 增加锁，防止频繁滚动导致重叠
+    let isAnimating = false;
 
     const slider = document.getElementById('main-slider');
     const nodes = {
@@ -109,6 +119,18 @@
         next();
     }
 
+    // 彻底销毁视频防止残留
+    function stopVideos() {
+        const videos = document.querySelectorAll('video');
+        videos.forEach(v => {
+            v.pause();
+            v.muted = true;
+            v.src = "";
+            v.load();
+            v.remove();
+        });
+    }
+
     function createMedia(item, isActive) {
         if (!item) return '';
         if (item.type === 'video') {
@@ -119,23 +141,17 @@
         }
     }
 
-    function stopVideos() {
-        document.querySelectorAll('video').forEach(v => {
-            v.pause();
-            v.muted = true;
-        });
-    }
-
     async function fetchOne() {
         try {
             const res = await fetch(apiConfig.url);
             const json = await res.json();
-            return { url: json.data.url || json.data, type: apiConfig.type };
+            const data = json.data.url || json.data;
+            return { url: data, type: apiConfig.type };
         } catch(e) { return null; }
     }
 
     async function updateSlides() {
-        stopVideos();
+        // 先清理旧内容
         nodes.curr.innerHTML = createMedia(history[curIdx], true);
         nodes.prev.innerHTML = curIdx > 0 ? createMedia(history[curIdx-1], false) : '';
         
@@ -150,36 +166,23 @@
                 }
             });
         }
-
-        const activeVideo = nodes.curr.querySelector('video');
-        if (activeVideo) {
-            activeVideo.muted = isMuted;
-            activeVideo.play().catch(e => {});
-        }
+        
+        const v = nodes.curr.querySelector('video');
+        if(v) { v.muted = isMuted; v.play().catch(()=>{}); }
     }
 
-    // --- 带动画的翻页封装 ---
     function animateTo(direction) {
         if (isAnimating) return;
         isAnimating = true;
 
         const offset = direction === 'next' ? -100 : 100;
-        slider.style.transition = 'transform 0.4s cubic-bezier(0.1, 0.67, 0.48, 1)';
+        slider.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.1, 0.25, 1)';
         slider.style.transform = `translateY(${offset}%)`;
 
         setTimeout(() => {
-            if (direction === 'next') {
-                curIdx++;
-                if (curIdx >= history.length) {
-                    fetchOne().then(item => {
-                        if(item) { history.push(item); updateSlides(); }
-                        else { curIdx--; }
-                    });
-                } else { updateSlides(); }
-            } else {
-                curIdx--;
-                updateSlides();
-            }
+            if (direction === 'next') curIdx++; else curIdx--;
+            updateSlides();
+            // 归位
             slider.style.transition = 'none';
             slider.style.transform = 'translateY(0)';
             isAnimating = false;
@@ -187,24 +190,37 @@
     }
 
     async function next() {
-        if (curIdx === -1) { // 首次加载不需要动画
+        if (curIdx === -1) {
             const item = await fetchOne();
             if(item) { history.push(item); curIdx = 0; updateSlides(); }
         } else {
-            animateTo('next');
+            if (curIdx + 1 >= history.length) {
+                const item = await fetchOne();
+                if(item) { history.push(item); animateTo('next'); }
+            } else animateTo('next');
         }
     }
 
-    function prev() {
-        if (curIdx > 0) animateTo('prev');
-    }
+    function prev() { if (curIdx > 0) animateTo('prev'); }
 
+    // --- 强制修正切换逻辑 ---
     function changeCate(el, api, type) {
+        // 1. 强力停止
         stopVideos();
+        // 2. 物理锁定：强制 slider 回到原点，不带任何延迟
+        isAnimating = false;
+        slider.style.transition = 'none';
+        slider.style.transform = 'translateY(0)';
+        slider.style.top = '0'; 
+        
+        // 3. 重置状态
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         apiConfig = { url: api, type: type };
-        history = []; curIdx = -1;
+        history = []; 
+        curIdx = -1;
+        
+        // 4. 加载
         next();
         el.scrollIntoView({ behavior: 'smooth', inline: 'center' });
     }
@@ -216,66 +232,30 @@
         if(v) v.muted = isMuted;
     }
 
-    // --- PC 滚轮监听 ---
-    let lastWheelTime = 0;
-    window.addEventListener('wheel', e => {
-        const now = Date.now();
-        if (now - lastWheelTime < 800) return; // 防抖，避免滚轮太灵敏一下跳好几张
+    // --- 统一交互 ---
+    let startY = 0, isMoving = false;
+    const handleStart = (y) => { if(!isAnimating) { startY = y; slider.style.transition = 'none'; isMoving = true; } };
+    const handleMove = (y) => { if(isMoving) { let d = y - startY; if(curIdx === 0 && d > 0) d /= 3; slider.style.transform = `translateY(${d}px)`; } };
+    const handleEnd = (y) => {
+        if(!isMoving) return; isMoving = false;
+        let d = y - startY, h = window.innerHeight;
+        if(d < -h*0.1) next();
+        else if(d > h*0.1 && curIdx > 0) prev();
+        else { slider.style.transition = 'transform 0.2s ease-out'; slider.style.transform = 'translateY(0)'; }
+    };
 
-        if (e.deltaY > 50) {
-            next();
-            lastWheelTime = now;
-        } else if (e.deltaY < -50) {
-            prev();
-            lastWheelTime = now;
-        }
+    window.addEventListener('wheel', e => {
+        if(isAnimating || Math.abs(e.deltaY) < 20) return;
+        if(e.deltaY > 0) next(); else prev();
     }, {passive: false});
 
-    // --- 统一手势逻辑 (兼容 Mouse 和 Touch) ---
-    let startY = 0;
-    let isMoving = false;
-
-    const handleStart = (y) => {
-        if (isAnimating) return;
-        startY = y;
-        slider.style.transition = 'none';
-        isMoving = true;
-    };
-
-    const handleMove = (y) => {
-        if (!isMoving) return;
-        let deltaY = y - startY;
-        if (curIdx === 0 && deltaY > 0) deltaY /= 3;
-        slider.style.transform = `translateY(${deltaY}px)`;
-    };
-
-    const handleEnd = (y) => {
-        if (!isMoving) return;
-        isMoving = false;
-        let deltaY = y - startY;
-        const screenH = window.innerHeight;
-
-        if (deltaY < -screenH * 0.15) {
-            animateTo('next');
-        } else if (deltaY > screenH * 0.15 && curIdx > 0) {
-            animateTo('prev');
-        } else {
-            slider.style.transition = 'transform 0.2s ease-out';
-            slider.style.transform = 'translateY(0)';
-        }
-    };
-
-    // 绑定触摸
-    const zone = document.getElementById('touch-zone');
-    zone.addEventListener('touchstart', e => handleStart(e.touches[0].clientY), {passive:true});
-    zone.addEventListener('touchmove', e => handleMove(e.touches[0].clientY), {passive:true});
-    zone.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientY), {passive:true});
-
-    // 绑定鼠标拖动
+    const zone = document.getElementById('app-root');
+    zone.addEventListener('touchstart', e => handleStart(e.touches[0].clientY));
+    zone.addEventListener('touchmove', e => handleMove(e.touches[0].clientY));
+    zone.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientY));
     zone.addEventListener('mousedown', e => handleStart(e.clientY));
     window.addEventListener('mousemove', e => handleMove(e.clientY));
     window.addEventListener('mouseup', e => handleEnd(e.clientY));
-
 </script>
 </body>
 </html>
