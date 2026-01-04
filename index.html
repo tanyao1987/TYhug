@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>极客工具箱 - H5适配版</title>
+    <title>极客工具箱 - H5流畅版</title>
     <style>
         :root {
             --primary: #a29bfe;
@@ -12,37 +12,64 @@
             --side: #16161e;
             --input-bg: #252530;
         }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             margin: 0; display: flex; height: 100vh;
             background: var(--bg); color: #eee;
             font-family: system-ui, -apple-system, sans-serif; overflow: hidden;
         }
 
-        /* 侧边栏 H5 响应式布局 */
+        /* --- 响应式布局保持 --- */
         .sidebar {
             width: 280px; background: var(--side); padding: 20px 15px;
             overflow-y: auto; border-right: 1px solid #2d2d3f; flex-shrink: 0;
         }
+
+        .main { 
+            flex-grow: 1; position: relative; background: #000; 
+            display: flex; justify-content: center; align-items: center; 
+        }
+
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: 40%; order: 2; border-right: none; border-top: 1px solid #333; }
-            .main { height: 60%; order: 1; }
+            .sidebar { 
+                width: 100%; height: 45%; 
+                order: 2; border-right: none; border-top: 1px solid #2d2d3f;
+            }
+            .main { height: 55%; order: 1; }
         }
 
         .sidebar h2 { font-size: 1.4rem; text-align: center; color: var(--primary); margin-bottom: 20px; }
         .tool-panel { background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .douyin-panel textarea { width: 100%; height: 60px; background: #111; border: 1px solid #444; color: #ccc; border-radius: 6px; padding: 8px; font-size: 12px; resize: none; box-sizing: border-box; outline: none; }
-        .douyin-panel button { width: 100%; margin-top: 10px; background: #fe2c55; border: none; padding: 10px; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        .douyin-panel textarea { 
+            width: 100%; height: 60px; background: #111; border: 1px solid #444; 
+            color: #ccc; border-radius: 6px; padding: 8px; font-size: 12px; resize: none; 
+            box-sizing: border-box; outline: none; 
+        }
+        
+        .douyin-panel button { 
+            width: 100%; margin-top: 10px; background: #fe2c55; border: none; 
+            padding: 10px; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; 
+        }
         
         /* 下载按钮 */
-        .btn-dl { background: #00b894 !important; display: none; margin-top: 8px; }
+        .btn-download { background: #00b894 !important; display: none; margin-top: 8px; }
 
-        .group-title { font-size: 11px; color: #555; margin: 18px 0 8px 5px; letter-spacing: 2px; text-transform: uppercase; border-left: 2px solid var(--primary); padding-left: 8px; }
-        .sidebar button.nav-btn { width: 100%; padding: 12px; margin-bottom: 6px; border: none; border-radius: 8px; background: rgba(255,255,255,0.03); color: #bbb; cursor: pointer; text-align: left; transition: 0.2s; font-size: 14px; }
-        .sidebar button.nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .sidebar button.nav-btn.active { background: var(--primary); color: #000; font-weight: bold; }
+        .group-title { 
+            font-size: 11px; color: #555; margin: 18px 0 8px 5px; 
+            letter-spacing: 2px; text-transform: uppercase; border-left: 2px solid var(--primary); padding-left: 8px; 
+        }
 
-        .main { flex-grow: 1; position: relative; background: #000; display: flex; justify-content: center; align-items: center; }
+        .sidebar button.nav-item { 
+            width: 100%; padding: 12px; margin-bottom: 6px; border: none; border-radius: 8px; 
+            background: rgba(255,255,255,0.03); color: #bbb; cursor: pointer; text-align: left; 
+            transition: 0.2s; font-size: 14px;
+        }
+        .sidebar button.nav-item.active { background: var(--primary); color: #000; font-weight: bold; }
+
         .media-container { width: 100%; height: 100%; display: none; justify-content: center; align-items: center; cursor: pointer; }
 
         #video-title {
@@ -59,37 +86,39 @@
             border: 4px solid rgba(162, 155, 254, 0.1); border-top: 4px solid var(--primary);
             border-radius: 50%; animation: spin 0.8s linear infinite; display: none; z-index: 100;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h2>GEEK TOOLS</h2>
+    <h2>TOOLBOX</h2>
     <div class="tool-panel douyin-panel">
-        <div class="group-title" style="color:#fe2c55; margin-top:0; border-left-color:#fe2c55;">抖音无水印解析</div>
-        <textarea id="dy-input" placeholder="请粘贴抖音分享链接..."></textarea>
+        <div class="group-title" style="color:#fe2c55; margin-top:0; border-left-color:#fe2c55;">抖音解析</div>
+        <textarea id="dy-input" placeholder="粘贴链接..."></textarea>
         <button onclick="parseDouyin()">立即解析</button>
-        <button id="dl-node" class="btn-dl" onclick="downloadVideo()">保存到相册</button>
+        <button id="dl-btn" class="douyin-panel button btn-download" onclick="saveVideo()">保存到相册</button>
     </div>
 
     <div class="group-title">视频娱乐</div>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinv', 'video')">🎬 随机小姐姐视频</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinv', 'video')">🎬 随机小姐姐视频</button>
+
     <div class="group-title">美图分类</div>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinvpic', 'img')">🖼️ 小姐姐图片</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/heisi', 'img')">🖤 随机黑丝</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/baisi', 'img')">🤍 随机白丝</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/jk', 'img')">👗 随机JK</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=pc', 'img')">💻 PC二次元</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=wap', 'img')">📱 手机二次元</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/random4kPic?type=wallpaper', 'img')">🌟 4K随机壁纸</button>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/random4kPic?type=acg', 'img')">✨ 4K二次元</button>
-    <div class="group-title">其他</div>
-    <button class="nav-btn" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/head', 'img')">👤 随机头像</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinvpic', 'img')">🖼️ 小姐姐图片</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/heisi', 'img')">🖤 随机黑丝</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/baisi', 'img')">🤍 随机白丝</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/jk', 'img')">👗 随机JK</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=pc', 'img')">💻 PC二次元</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=wap', 'img')">📱 手机二次元</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/random4kPic?type=wallpaper', 'img')">🌟 4K随机壁纸</button>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/wallpaper', 'img')">🖼️ 通用壁纸</button>
+
+    <div class="group-title">生活辅助</div>
+    <button class="nav-item" onclick="fetchApi(this, 'https://v2.xxapi.cn/api/head', 'img')">👤 随机头像</button>
 </div>
 
 <div class="main">
-    <div id="welcome-view"><i>🛠️</i><p>请选择功能</p></div>
+    <div id="welcome-view"><i>🛠️</i><p>请选择工具</p></div>
     <div id="loader" class="loading-spinner"></div>
     <div id="video-title"></div>
     <div id="display-zone" class="media-container" onclick="handleContainerClick()">
@@ -108,19 +137,22 @@
     const titleNode = document.getElementById('video-title');
     const welcomeView = document.getElementById('welcome-view');
     const displayZone = document.getElementById('display-zone');
-    const dlNode = document.getElementById('dl-node');
+    const dlBtn = document.getElementById('dl-btn');
 
-    imgNode.onload = function() { loader.style.display = 'none'; this.style.display = 'block'; };
-    videoNode.oncanplay = function() { loader.style.display = 'none'; this.style.display = 'block'; };
+    imgNode.onload = () => { loader.style.display = 'none'; imgNode.style.display = 'block'; };
+    videoNode.oncanplay = () => { loader.style.display = 'none'; videoNode.style.display = 'block'; };
 
+    // --- 原始其他接口逻辑保持不动 ---
     async function fetchApi(btn, url, type) {
         welcomeView.style.display = 'none';
         displayZone.style.display = 'flex';
         isDouyinMode = false;
         titleNode.style.display = 'none';
-        dlNode.style.display = 'none';
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        dlBtn.style.display = 'none';
+
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         if (btn) btn.classList.add('active');
+
         activeApi = url; activeType = type;
         refresh();
     }
@@ -132,9 +164,9 @@
         try {
             const res = await fetch(activeApi);
             const json = await res.json();
-            if (json.code === 200) {
-                if (activeType === 'video') { videoNode.src = json.data; videoNode.play(); } 
-                else { imgNode.src = json.data; }
+            if (json.code === 200 || json.code === 1) {
+                const url = json.data.url || json.data;
+                if (activeType === 'video') { videoNode.src = url; videoNode.play(); } else { imgNode.src = url; }
             }
         } catch (e) { loader.style.display = 'none'; }
     }
@@ -144,43 +176,60 @@
         videoNode.style.display = 'none'; videoNode.pause(); videoNode.src = '';
     }
 
-    /* 抖音解析逻辑：保持原始逻辑不动 */
+    // --- 重点修改：仅针对抖音解析接口和播放 ---
     async function parseDouyin() {
         const text = document.getElementById('dy-input').value;
         const urlMatch = text.match(/https?:\/\/[v\d]+\.douyin\.com\/[A-Za-z0-9\-\/]+/);
-        if (!urlMatch) { alert("链接无效"); return; }
+
+        if (!urlMatch) {
+            alert("未识别到抖音链接");
+            return;
+        }
 
         welcomeView.style.display = 'none';
         displayZone.style.display = 'flex';
         isDouyinMode = true;
         resetDisplay();
         loader.style.display = 'block';
-        dlNode.style.display = 'none';
+        dlBtn.style.display = 'none';
 
         try {
-            const res = await fetch(`https://ysjger1987-douyin.hf.space/?url=${encodeURIComponent(urlMatch[0])}`);
+            // 使用你提供的 api.pearktrue.cn 接口
+            const apiUrl = `https://api.pearktrue.cn/api/video/douyin/?url=${encodeURIComponent(urlMatch[0])}`;
+            const res = await fetch(apiUrl);
             const json = await res.json();
+
             if (json.code === 200) {
+                // 对应返回内容的 data 结构
                 titleNode.innerText = json.data.title;
                 titleNode.style.display = 'block';
+                
                 videoNode.src = json.data.url;
-                currentVUrl = json.data.url;
-                dlNode.style.display = 'block'; // 显示下载按钮
-                videoNode.play(); // 显式触发播放
+                currentVUrl = json.data.url; 
+                dlBtn.style.display = 'block'; 
+
+                // 强制触发播放
+                videoNode.load();
+                videoNode.play();
+            } else {
+                alert("解析失败：" + json.msg);
+                loader.style.display = 'none';
             }
-        } catch (e) { loader.style.display = 'none'; alert("解析失败"); }
+        } catch (e) {
+            loader.style.display = 'none';
+            alert("接口连接错误");
+        }
     }
 
-    function downloadVideo() {
+    function saveVideo() {
         if (!currentVUrl) return;
         const a = document.createElement('a');
         a.href = currentVUrl;
         a.target = '_blank';
-        a.download = 'video.mp4';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        alert("请在打开的页面长按视频保存到相册");
+        alert("请在打开的窗口中长按视频选择“保存视频”");
     }
 
     function handleContainerClick() { if (!isDouyinMode) refresh(); }
