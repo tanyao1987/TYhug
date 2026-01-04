@@ -1,213 +1,241 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>未来科技 - 创新驱动，连接世界</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>极客工具箱 - 流畅版</title>
     <style>
-        /* CSS 样式 - 保持简洁现代风格 */
+        :root {
+            --primary: #a29bfe;
+            --accent: #ff7675;
+            --bg: #0c0c10;
+            --side: #16161e;
+            --input-bg: #252530;
+        }
         body {
-            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f9;
-            color: #333;
-            line-height: 1.6;
+            margin: 0; display: flex; height: 100vh;
+            background: var(--bg); color: #eee;
+            font-family: system-ui, -apple-system, sans-serif; overflow: hidden;
         }
 
-        header {
-            background-color: #007bff; /* 品牌主色：蓝色 */
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* 侧边栏 H5 适配 */
+        .sidebar {
+            width: 280px; background: var(--side); padding: 20px 15px;
+            overflow-y: auto; border-right: 1px solid #2d2d3f; flex-shrink: 0;
         }
-
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-
-        header p {
-            margin-top: 5px;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        /* 访客计数样式 */
-        #visitorInfo {
-            margin-top: 10px;
-            font-size: 1em;
-            opacity: 0.9;
-        }
-        #visitorCount {
-            color: #ffc107; /* 黄色，用于突出数字 */
-            font-weight: bold;
-            font-size: 1.2em; /* 稍微放大数字 */
-        }
-
-        .container {
-            width: 80%;
-            margin: 30px auto;
-            padding: 20px;
-        }
-
-        .section {
-            background-color: white;
-            padding: 30px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .section h2 {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .features {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            text-align: center;
-        }
-
-        .feature-item {
-            flex: 1;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .feature-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-item h3 {
-            color: #28a745; /* 绿色 */
-            margin-top: 10px;
-        }
-
-        .icon {
-            font-size: 3em;
-            color: #ffc107; /* 黄色 */
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            background-color: #333;
-            color: white;
-            margin-top: 40px;
-        }
-
-        /* 响应式调整 */
         @media (max-width: 768px) {
-            .container {
-                width: 95%;
-            }
-            .features {
-                flex-direction: column;
-            }
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: 40%; order: 2; border-right: none; border-top: 1px solid #333; }
+            .main { height: 60%; order: 1; }
         }
+
+        .sidebar h2 { font-size: 1.4rem; text-align: center; color: var(--primary); margin-bottom: 20px; }
+        .tool-panel { background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        .douyin-panel textarea { width: 100%; height: 60px; background: #111; border: 1px solid #444; color: #ccc; border-radius: 6px; padding: 8px; font-size: 12px; resize: none; box-sizing: border-box; outline: none; }
+        .douyin-panel button { width: 100%; margin-top: 10px; background: #fe2c55; border: none; padding: 10px; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        /* 下载按钮样式 */
+        .download-btn { background: #00b894 !important; display: none; margin-top: 8px; }
+
+        .group-title { font-size: 11px; color: #555; margin: 18px 0 8px 5px; letter-spacing: 2px; text-transform: uppercase; border-left: 2px solid var(--primary); padding-left: 8px; }
+        .sidebar button { width: 100%; padding: 12px; margin-bottom: 6px; border: none; border-radius: 8px; background: rgba(255,255,255,0.03); color: #bbb; cursor: pointer; text-align: left; transition: 0.2s; font-size: 14px; }
+        .sidebar button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .sidebar button.active { background: var(--primary); color: #000; font-weight: bold; }
+
+        .main { flex-grow: 1; position: relative; background: #000; display: flex; justify-content: center; align-items: center; }
+        .media-container { width: 100%; height: 100%; display: none; justify-content: center; align-items: center; cursor: pointer; }
+
+        #video-title {
+            position: absolute; top: 20px; padding: 10px 20px; color: white;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            border-radius: 20px; font-size: 13px; z-index: 20; display: none;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center; max-width: 80%;
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        img, video { max-width: 98%; max-height: 98%; object-fit: contain; display: none; }
+
+        .loading-spinner {
+            position: absolute; width: 45px; height: 45px;
+            border: 4px solid rgba(162, 155, 254, 0.1); border-top: 4px solid var(--primary);
+            border-radius: 50%; animation: spin 0.8s linear infinite; display: none; z-index: 100;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #welcome-view { text-align: center; color: #555; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🚀 极光数字科技</h1>
-        <p>Innovation-Driven, World-Connected. 创新驱动，连接世界。</p>
-        
-        <p id="visitorInfo">
-            您是本站的第 <span id="visitorCount">加载中...</span> 位访客
-        </p>
-        
-    </header>
-
-    <div class="container">
-        
-        <div class="section">
-            <h2>✨ 我们的愿景</h2>
-            <p>我们致力于通过前沿的**人工智能**和**云计算**技术，构建一个更加智能、高效的数字生态系统。我们相信，每一次技术革新都将为人类带来无限可能。</p>
-            <p>未来已来，我们是构建者。</p>
-        </div>
-        
-        <div class="section">
-            <h2>💡 核心产品与优势</h2>
-            <div class="features">
-                <div class="feature-item">
-                    <div class="icon">🤖</div>
-                    <h3>AI 智能引擎</h3>
-                    <p>超强的学习能力和数据处理速度，为企业提供定制化的决策支持系统。</p>
-                </div>
-                <div class="feature-item">
-                    <div class="icon">☁️</div>
-                    <h3>分布式云服务</h3>
-                    <p>安全、稳定、高并发的全球云基础设施，助力您的业务随时随地弹性扩展。</p>
-                </div>
-                <div class="feature-item">
-                    <div class="icon">🔗</div>
-                    <h3>物联网解决方案</h3>
-                    <p>连接万物，实现设备间无缝通信，打造真正的智慧城市与工业4.0。</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📞 联系我们</h2>
-            <p>对我们的技术或合作感兴趣？请随时联系我们，共同开启数字化转型之旅。</p>
-            <ul>
-                <li><strong>邮箱:</strong> contact@auroradigital.com</li>
-                <li><strong>电话:</strong> (888) 123-4567</li>
-                <li><strong>地址:</strong> 创新大道88号 极光大厦</li>
-            </ul>
-        </div>
-
+<div class="sidebar">
+    <h2>TOOLBOX</h2>
+    <div class="tool-panel douyin-panel">
+        <div class="group-title" style="color:#fe2c55; margin-top:0; border-left-color:#fe2c55;">抖音解析</div>
+        <textarea id="dy-input" placeholder="粘贴链接..."></textarea>
+        <button onclick="parseDouyin()">立即解析</button>
+        <button id="download-node" class="download-btn" onclick="saveVideo()">保存到相册</button>
     </div>
 
-    <footer>
-        <p>&copy; 2025 极光数字科技. 保留所有权利。</p>
-    </footer>
+    <div class="group-title">视频娱乐</div>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinv', 'video')">🎬 随机小姐姐视频</button>
+    <div class="group-title">美图分类</div>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/meinvpic', 'img')">🖼️ 小姐姐图片</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/heisi', 'img')">🖤 随机黑丝</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/baisi', 'img')">🤍 随机白丝</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/jk', 'img')">👗 随机JK</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=pc', 'img')">💻 PC二次元</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=wap', 'img')">📱 手机二次元</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/random4kPic?type=wallpaper', 'img')">🌟 4K随机壁纸</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/random4kPic?type=acg', 'img')">✨ 4K二次元</button>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/wallpaper', 'img')">🖼️ 通用壁纸</button>
+    <div class="group-title">生活辅助</div>
+    <button onclick="fetchApi(this, 'https://v2.xxapi.cn/api/head', 'img')">👤 随机头像</button>
+</div>
 
-    <script>
-        function fetchVisitorCount() {
-            // 使用您提供的 CountAPI V2 URL
-            const apiUrl = 'https://api.counterapi.dev/v2/s-team-7-1986/HuggingFace111/up';
+<div class="main">
+    <div id="welcome-view"><i>🛠️</i><p>请选择工具</p></div>
+    <div id="loader" class="loading-spinner"></div>
+    <div id="video-title"></div>
+    <div id="display-zone" class="media-container" onclick="handleContainerClick()">
+        <img id="img-node">
+        <video id="video-node" controls autoplay loop playsinline webkit-playsinline></video>
+    </div>
+</div>
 
-            fetch(apiUrl)
-                .then(response => {
-                    // 检查网络响应是否成功
-                    if (!response.ok) {
-                        throw new Error('网络响应错误，状态码: ' + response.status);
-                    }
-                    return response.json(); 
-                })
-                .then(data => {
-                    // *** 关键修复：从 data.data.up_count 中提取值 ***
-                    const currentCount = data && data.data ? data.data.up_count : undefined;
-                    
-                    const visitorCountElement = document.getElementById('visitorCount');
-                    
-                    if (currentCount !== undefined && visitorCountElement) {
-                        // 更新页面上的数字，并格式化数字
-                        visitorCountElement.textContent = currentCount.toLocaleString();
-                    } else {
-                        if (visitorCountElement) visitorCountElement.textContent = '计数失败';
-                    }
-                })
-                .catch(error => {
-                    console.error('获取计数时发生错误:', error);
-                    const visitorCountElement = document.getElementById('visitorCount');
-                    if (visitorCountElement) visitorCountElement.textContent = '加载错误';
-                });
+<script>
+    let activeApi = '', activeType = '', isDouyinMode = false;
+    let lastDownloadUrl = ''; // 新增：记录最后一次解析成功的URL
+
+    const imgNode = document.getElementById('img-node');
+    const videoNode = document.getElementById('video-node');
+    const loader = document.getElementById('loader');
+    const titleNode = document.getElementById('video-title');
+    const welcomeView = document.getElementById('welcome-view');
+    const displayZone = document.getElementById('display-zone');
+    const downloadNode = document.getElementById('download-node');
+
+    imgNode.onload = function() {
+        loader.style.display = 'none';
+        this.style.display = 'block';
+        this.classList.add('fade-in');
+    };
+
+    videoNode.oncanplay = function() {
+        loader.style.display = 'none';
+        this.style.display = 'block';
+        this.classList.add('fade-in');
+    };
+
+    async function fetchApi(btn, url, type) {
+        welcomeView.style.display = 'none';
+        displayZone.style.display = 'flex';
+        isDouyinMode = false;
+        titleNode.style.display = 'none';
+        downloadNode.style.display = 'none'; // 切换到非抖音模式隐藏下载
+
+        document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        activeApi = url;
+        activeType = type;
+        refresh();
+    }
+
+    async function refresh() {
+        if (!activeApi) return;
+        resetDisplay();
+        loader.style.display = 'block';
+
+        try {
+            const res = await fetch(activeApi);
+            const json = await res.json();
+            if (json.code === 200) {
+                if (activeType === 'video') {
+                    videoNode.src = json.data;
+                } else {
+                    imgNode.src = json.data;
+                }
+            } else {
+                loader.style.display = 'none';
+                alert("接口返回错误");
+            }
+        } catch (e) {
+            loader.style.display = 'none';
+            alert("请求超时，请重试");
+        }
+    }
+
+    function resetDisplay() {
+        imgNode.style.display = 'none';
+        imgNode.classList.remove('fade-in');
+        imgNode.src = '';
+
+        videoNode.style.display = 'none';
+        videoNode.classList.remove('fade-in');
+        videoNode.pause();
+        videoNode.src = '';
+    }
+
+    /* 抖音解析逻辑：100% 还原你的原始代码 */
+    async function parseDouyin() {
+        const text = document.getElementById('dy-input').value;
+        // 完全保持你的原始正则
+        const urlMatch = text.match(/https?:\/\/[v\d]+\.douyin\.com\/[A-Za-z0-9\-\/]+/);
+
+        if (!urlMatch) {
+            alert("未识别到抖音链接，请检查格式是否正确");
+            return;
         }
 
-        // 页面加载完成后，执行获取计数器的函数
-        window.onload = fetchVisitorCount;
-    </script>
+        const cleanUrl = urlMatch[0];
+
+        welcomeView.style.display = 'none';
+        displayZone.style.display = 'flex';
+        isDouyinMode = true;
+        resetDisplay();
+        loader.style.display = 'block';
+        downloadNode.style.display = 'none';
+
+        try {
+            const res = await fetch(`https://ysjger1987-douyin.hf.space/?url=${encodeURIComponent(cleanUrl)}`);
+            const json = await res.json();
+            if (json.code === 200) {
+                titleNode.innerText = json.data.title;
+                titleNode.style.display = 'block';
+                activeType = 'video';
+                videoNode.src = json.data.url;
+                
+                // 记录地址并显示保存按钮
+                lastDownloadUrl = json.data.url;
+                downloadNode.style.display = 'block';
+            } else {
+                throw new Error(json.msg || "解析失败");
+            }
+        } catch (e) {
+            loader.style.display = 'none';
+            alert("解析失败: " + e.message);
+        }
+    }
+
+    // 新增保存功能：不影响原有逻辑
+    function saveVideo() {
+        if (!lastDownloadUrl) return;
+        const a = document.createElement('a');
+        a.href = lastDownloadUrl;
+        a.download = 'video_' + Date.now() + '.mp4';
+        a.target = '_blank'; // 兼容手机端跳转
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        alert('请在打开的页面长按视频选择“保存视频”');
+    }
+
+    function handleContainerClick() {
+        if (!isDouyinMode) refresh();
+    }
+</script>
 </body>
 </html>
+
+
