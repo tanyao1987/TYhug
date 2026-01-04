@@ -3,73 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>瑶哥福利页</title>
+    <title>瑶哥福利夜</title>
     <style>
         :root { --primary: #a29bfe; --bg: #000; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
-        /* 核心：锁定全局，禁止任何默认滚动 */
-        body, html { 
-            width: 100%; height: 100%; background: #000; 
-            overflow: hidden; position: fixed; 
-            color: #fff; font-family: sans-serif; 
-        }
+        body, html { width: 100%; height: 100%; background: #000; overflow: hidden; position: fixed; color: #fff; font-family: sans-serif; }
+        #app-root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        #main-slider { position: absolute; width: 100%; height: 100%; top: 0; left: 0; will-change: transform; z-index: 1; }
 
-        /* 独立于滑动层的背景视口 */
-        #app-root {
-            position: relative; width: 100%; height: 100%;
-            overflow: hidden; background: #000;
-        }
-
-        /* 滑动容器：只处理上下位移 */
-        #main-slider {
-            position: absolute; width: 100%; height: 100%;
-            top: 0; left: 0; will-change: transform; z-index: 1;
-        }
-
-        .slide-item {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: #000; overflow: hidden;
-        }
-
-        /* 严格的三层布局 */
+        .slide-item { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #000; overflow: hidden; }
         .prev-slide { transform: translateY(-100%); top: 0; }
         .curr-slide { transform: translateY(0); top: 0; }
         .next-slide { transform: translateY(100%); top: 0; }
 
         img, video { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
 
-        /* 独立层：底部导航，绝不参与位移 */
-        .footer-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,1) 40%, transparent);
-            padding: 10px 0 35px 0; z-index: 999; 
-        }
-        .scroll-container { 
-            display: flex; overflow-x: auto; white-space: nowrap; 
-            padding: 0 20px; gap: 12px; scrollbar-width: none;
-        }
+        /* 音频控制台样式 */
+        .audio-card { width: 85%; max-width: 340px; background: rgba(255,255,255,0.08); backdrop-filter: blur(25px); border-radius: 40px; padding: 50px 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .audio-icon { font-size: 64px; margin-bottom: 20px; transition: 0.3s; }
+        .is-playing .audio-icon { animation: bounce 1.2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        .play-trigger { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); border: none; font-size: 28px; cursor: pointer; color: #000; margin-top: 25px; transition: 0.2s; display: inline-flex; justify-content: center; align-items: center; }
+        .play-trigger:active { transform: scale(0.9); }
+
+        /* 导航栏 */
+        .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,1) 40%, transparent); padding: 10px 0 35px 0; z-index: 999; }
+        .scroll-container { display: flex; overflow-x: auto; white-space: nowrap; padding: 0 20px; gap: 12px; scrollbar-width: none; }
         .scroll-container::-webkit-scrollbar { display: none; }
-        .nav-tab {
-            display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.1); 
-            border-radius: 25px; font-size: 14px; color: #ccc; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
-        }
+        .nav-tab { display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 25px; font-size: 14px; color: #ccc; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
         .nav-tab.active { background: var(--primary); color: #000; font-weight: bold; border-color: var(--primary); }
 
+        /* 侧边功能键 */
         .side-bar { position: fixed; right: 15px; bottom: 140px; display: flex; flex-direction: column; gap: 18px; z-index: 1000; }
-        .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; font-size: 24px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; }
+        .circle-btn { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); display: flex; justify-content: center; align-items: center; font-size: 24px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; }
 
         #start-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #start-mask button { padding: 18px 50px; border-radius: 40px; border: none; background: var(--primary); font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 30px rgba(162,155,254,0.4); }
+        #start-mask button { padding: 18px 50px; border-radius: 40px; border: none; background: var(--primary); font-size: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="start-mask">
     <button onclick="initApp()">开启福利模式</button>
-    <p style="color: #666; margin-top: 20px;">刷抖音会吧?</p>
+    <p style="color: #666; margin-top: 20px;">刷刷刷,就知道刷</p>
 </div>
 
 <div id="app-root">
@@ -87,7 +65,8 @@
     <div class="footer-nav">
         <div class="scroll-container" id="menu-list">
             <div class="nav-tab active" onclick="changeCate(this, 'https://v2.xxapi.cn/api/meinv', 'video')">🎬 随机小姐姐</div>
-            <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/meinvpic', 'img')">🖼️ 美女图片</div>
+            <div class="nav-tab" onclick="changeCate(this, 'https://api.pearktrue.cn/api/yujie/?type=mp3', 'audio')">🎙️ 御姐音频</div>
+            <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/meinvpic', 'img')">🖼️ 小姐姐图片</div>
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/heisi', 'img')">🖤 随机黑丝</div>
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/baisi', 'img')">🤍 随机白丝</div>
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/jk', 'img')">👗 随机JK</div>
@@ -95,47 +74,45 @@
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/random4kPic?type=acg', 'img')">✨ 4K二次元</div>
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=pc', 'img')">💻 PC动漫</div>
             <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/randomAcgPic?type=wap', 'img')">📱 手机动漫</div>
-            <div class="nav-tab" onclick="changeCate(this, 'https://v2.xxapi.cn/api/head', 'img')">👤 随机头像</div>
         </div>
     </div>
 </div>
 
 <script>
     let apiConfig = { url: 'https://v2.xxapi.cn/api/meinv', type: 'video' };
-    let history = []; 
-    let curIdx = -1;
-    let isMuted = false;
-    let isAnimating = false;
+    let history = []; let curIdx = -1; let isMuted = false; let isAnimating = false;
+    let isLoading = false; // 并行锁
 
     const slider = document.getElementById('main-slider');
-    const nodes = {
-        prev: document.getElementById('slide-prev'),
-        curr: document.getElementById('slide-curr'),
-        next: document.getElementById('slide-next')
-    };
+    const nodes = { prev: document.getElementById('slide-prev'), curr: document.getElementById('slide-curr'), next: document.getElementById('slide-next') };
 
-    function initApp() {
-        document.getElementById('start-mask').style.display = 'none';
-        next();
+    function initApp() { document.getElementById('start-mask').style.display = 'none'; next(); }
+
+    function stopAllMedia() {
+        document.querySelectorAll('video, audio').forEach(m => { m.pause(); m.src = ""; m.load(); m.remove(); });
     }
 
-    // 彻底销毁视频防止残留
-    function stopVideos() {
-        const videos = document.querySelectorAll('video');
-        videos.forEach(v => {
-            v.pause();
-            v.muted = true;
-            v.src = "";
-            v.load();
-            v.remove();
-        });
+    function toggleAudio(btn) {
+        const container = btn.closest('.audio-card');
+        const audio = container.querySelector('audio');
+        if (audio.paused) { audio.play(); btn.innerText = "⏸"; container.classList.add('is-playing'); } 
+        else { audio.pause(); btn.innerText = "▶"; container.classList.remove('is-playing'); }
     }
 
     function createMedia(item, isActive) {
         if (!item) return '';
         if (item.type === 'video') {
-            const autoPlayAttr = isActive ? 'autoplay' : '';
-            return `<video src="${item.url}" playsinline webkit-playsinline loop ${autoPlayAttr} ${isMuted || !isActive ? 'muted' : ''}></video>`;
+            return `<video src="${item.url}" playsinline webkit-playsinline loop ${isActive?'autoplay':''} ${isMuted || !isActive ? 'muted' : ''}></video>`;
+        } else if (item.type === 'audio') {
+            const activeClass = isActive ? 'is-playing' : '';
+            const icon = isActive ? '⏸' : '▶';
+            return `
+                <div class="audio-card ${activeClass}">
+                    <div class="audio-icon">🎙️</div>
+                    <p style="color:#aaa; font-size:14px;">御姐音播放中</p>
+                    <audio src="${item.url}" ${isActive?'autoplay':''} onended="this.parentElement.classList.remove('is-playing'); this.nextElementSibling.innerText='▶';"></audio>
+                    <button class="play-trigger" onclick="toggleAudio(this)">${icon}</button>
+                </div>`;
         } else {
             return `<img src="${item.url}">`;
         }
@@ -145,28 +122,40 @@
         try {
             const res = await fetch(apiConfig.url);
             const json = await res.json();
-            const data = json.data.url || json.data;
-            return { url: data, type: apiConfig.type };
+            const data = json.audiopath || (json.data ? (json.data.url || json.data) : null);
+            return data ? { url: data, type: apiConfig.type } : null;
         } catch(e) { return null; }
     }
 
-    async function updateSlides() {
-        // 先清理旧内容
-        nodes.curr.innerHTML = createMedia(history[curIdx], true);
-        nodes.prev.innerHTML = curIdx > 0 ? createMedia(history[curIdx-1], false) : '';
+    // 核心改进：深度并行预填补逻辑
+    async function prefillHistory() {
+        if (isLoading) return;
+        isLoading = true;
+        const targetLen = curIdx + 4; // 始终维持领先当前 4 个内容
         
-        if (curIdx + 1 < history.length) {
-            nodes.next.innerHTML = createMedia(history[curIdx+1], false);
-        } else {
-            nodes.next.innerHTML = '';
-            fetchOne().then(item => {
-                if(item) {
-                    history.push(item);
-                    nodes.next.innerHTML = createMedia(item, false);
-                }
-            });
+        while (history.length < targetLen) {
+            // 每次并行发起 2 个请求
+            const results = await Promise.all([fetchOne(), fetchOne()]);
+            results.forEach(item => { if(item) history.push(item); });
         }
+        isLoading = false;
+        renderLayers();
+    }
+
+    function renderLayers() {
+        // 渲染下一层（秒开的关键）
+        if (curIdx + 1 < history.length) nodes.next.innerHTML = createMedia(history[curIdx+1], false);
+        // 渲染上一层
+        if (curIdx > 0) nodes.prev.innerHTML = createMedia(history[curIdx-1], false);
+    }
+
+    async function updateSlides() {
+        stopAllMedia();
+        nodes.curr.innerHTML = createMedia(history[curIdx], true);
         
+        // 异步并行预载，不阻塞当前显示
+        prefillHistory();
+
         const v = nodes.curr.querySelector('video');
         if(v) { v.muted = isMuted; v.play().catch(()=>{}); }
     }
@@ -174,15 +163,12 @@
     function animateTo(direction) {
         if (isAnimating) return;
         isAnimating = true;
-
         const offset = direction === 'next' ? -100 : 100;
         slider.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.1, 0.25, 1)';
         slider.style.transform = `translateY(${offset}%)`;
-
         setTimeout(() => {
             if (direction === 'next') curIdx++; else curIdx--;
             updateSlides();
-            // 归位
             slider.style.transition = 'none';
             slider.style.transform = 'translateY(0)';
             isAnimating = false;
@@ -191,9 +177,12 @@
 
     async function next() {
         if (curIdx === -1) {
-            const item = await fetchOne();
-            if(item) { history.push(item); curIdx = 0; updateSlides(); }
+            // 首次进入：并行加载前 3 个
+            const items = await Promise.all([fetchOne(), fetchOne(), fetchOne()]);
+            items.forEach(it => { if(it) history.push(it); });
+            if(history.length > 0) { curIdx = 0; updateSlides(); }
         } else {
+            // 如果点太快储备不足，强制拉取一个
             if (curIdx + 1 >= history.length) {
                 const item = await fetchOne();
                 if(item) { history.push(item); animateTo('next'); }
@@ -203,24 +192,13 @@
 
     function prev() { if (curIdx > 0) animateTo('prev'); }
 
-    // --- 强制修正切换逻辑 ---
     function changeCate(el, api, type) {
-        // 1. 强力停止
-        stopVideos();
-        // 2. 物理锁定：强制 slider 回到原点，不带任何延迟
-        isAnimating = false;
-        slider.style.transition = 'none';
-        slider.style.transform = 'translateY(0)';
-        slider.style.top = '0'; 
-        
-        // 3. 重置状态
+        stopAllMedia();
+        isAnimating = false; slider.style.transition = 'none'; slider.style.transform = 'translateY(0)';
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         apiConfig = { url: api, type: type };
-        history = []; 
-        curIdx = -1;
-        
-        // 4. 加载
+        history = []; curIdx = -1;
         next();
         el.scrollIntoView({ behavior: 'smooth', inline: 'center' });
     }
@@ -228,31 +206,29 @@
     function toggleMute() {
         isMuted = !isMuted;
         document.getElementById('vol-icon').innerText = isMuted ? '🔇' : '🔊';
-        const v = nodes.curr.querySelector('video');
-        if(v) v.muted = isMuted;
+        const m = nodes.curr.querySelector('video, audio');
+        if(m) m.muted = isMuted;
     }
 
-    // --- 统一交互 ---
     let startY = 0, isMoving = false;
     const handleStart = (y) => { if(!isAnimating) { startY = y; slider.style.transition = 'none'; isMoving = true; } };
     const handleMove = (y) => { if(isMoving) { let d = y - startY; if(curIdx === 0 && d > 0) d /= 3; slider.style.transform = `translateY(${d}px)`; } };
     const handleEnd = (y) => {
         if(!isMoving) return; isMoving = false;
         let d = y - startY, h = window.innerHeight;
-        if(d < -h*0.1) next();
-        else if(d > h*0.1 && curIdx > 0) prev();
+        if(d < -h*0.12) next(); else if(d > h*0.12 && curIdx > 0) prev();
         else { slider.style.transition = 'transform 0.2s ease-out'; slider.style.transform = 'translateY(0)'; }
     };
 
     window.addEventListener('wheel', e => {
-        if(isAnimating || Math.abs(e.deltaY) < 20) return;
+        if(isAnimating || Math.abs(e.deltaY) < 30) return;
         if(e.deltaY > 0) next(); else prev();
     }, {passive: false});
 
     const zone = document.getElementById('app-root');
-    zone.addEventListener('touchstart', e => handleStart(e.touches[0].clientY));
-    zone.addEventListener('touchmove', e => handleMove(e.touches[0].clientY));
-    zone.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientY));
+    zone.addEventListener('touchstart', e => handleStart(e.touches[0].clientY), {passive:true});
+    zone.addEventListener('touchmove', e => handleMove(e.touches[0].clientY), {passive:true});
+    zone.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientY), {passive:true});
     zone.addEventListener('mousedown', e => handleStart(e.clientY));
     window.addEventListener('mousemove', e => handleMove(e.clientY));
     window.addEventListener('mouseup', e => handleEnd(e.clientY));
